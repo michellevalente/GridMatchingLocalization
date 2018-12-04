@@ -57,7 +57,7 @@ count = 1;
     % segment lenghts
     num_lengths = 8;
     lengths = [100,200,300,400,500,600,700,800];
-
+t_err_length
     % For all start positions do
     for first_frame = 1:step_size:size(pose,2)-1
         for l = 1:num_lengths

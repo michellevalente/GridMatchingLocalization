@@ -1,29 +1,20 @@
 function [fixed,moving,aging_lidar,new_position_cut,bb] = cropMaps(previous_grid,new_grid,aging_lidar,position)
-%CROPMAPS Summary of this function goes here
-%   Detailed explanation goes here
-%      fixed = previous_grid(:,:,5);
-%     image1 = previous_grid(:,:,2);
-%     moving_occ = new_grid(:,:,2);    
-%     image3 = previous_grid(:,:,1);
-%     moving_free = new_grid(:,:,1);
-%     moving_sensor = new_grid(:,:,5);
-%     fixed_sensor = previous_grid(:,:,7);
-    
+
     total_moving = new_grid(:,:,2);
     total_moving(total_moving > 0 ) = 1.0;
     props = regionprops(total_moving,'BoundingBox');
     bb = props.BoundingBox;
-    bb(1) = round(bb(1) - 50);
+    bb(1) = round(bb(1) - 10);
     if bb(1) < 1
         bb(1) = 1.0;
     end
-    bb(2) = round(bb(2) - 50);
+    bb(2) = round(bb(2) - 10);
     if bb(2) < 1
         bb(2) = 1.0;
     end
    
-    bb(3) = round(bb(3) + 100);
-    bb(4) = round(bb(4) + 100);
+    bb(3) = round(bb(3) + 20);
+    bb(4) = round(bb(4) + 20);
     
     if bb(2) + bb(4) > size(total_moving,2)
         bb(4) = size(total_moving,2) - bb(2);

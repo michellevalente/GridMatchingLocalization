@@ -1,5 +1,6 @@
 close all;
 
+%% Parameters
 use_odometry = false;
 data_set = '03';
 root_dir = '/media/daniele/Backup/Dataset/kitti/odometry/sequences/';
@@ -8,8 +9,8 @@ image_dir = fullfile(root_dir,[data_set '/image_0/' ]);
 images   = dir(fullfile(image_dir,'*.png'));
 nt_frames = length(images) -1;
 velo_dir = [root_dir,data_set,'/velodyne/'];
-calib_dir = fullfile(base_dir,['/calib']);
 
+%% Read ground truth poses for comparision and add error for simulated IMU
 if exist('pose','var') == 0 
     vo_bench_poses_fpath = [base_dir '/' data_set,'.txt'];
     vo_bench_poses = dlmread(vo_bench_poses_fpath);
@@ -20,35 +21,24 @@ if exist('pose','var') == 0
                     0 0 0 1];
     end
     pose_error = addErrorPoses(pose);
-    calib_cam = [718.8560 0 607.1928 0; 0 718.8560 185.2157 0; 0 0 1 0];
-    Tr_velo_to_cam = [0.0080 -1.0000 -0.0008 -0.0138; -0.0028  0.0008 -1.0000 -0.0554; 1 0.0080 -0.0028 -0.2919; 0 0 0 1];
 end 
 
 %% Grid initialization
 size_grid_x = 1600;
 size_grid_y = 1600;
-resolution = 0.8;
+resolution = 0.5;
 size_x = round(size_grid_x/resolution);
 size_y = round(size_grid_y/resolution);
 lidar_grid = zeros(size_x, size_y,4);
 lidar_grid(:,:,4) = 1.0;
-stereo_grid = zeros(size_x, size_y,4);
-stereo_grid(:,:,4) = 1.0;
-fusion_grid = zeros(size_x, size_y,5);
-fusion_grid(:,:,4) = 1.0;
-fusion_grid(:,:,5) = 0;
 aging_lidar = zeros(size_x, size_y,1);
-aging_stereo = zeros(size_x, size_y,1);
 total_grid = zeros(size_x, size_y,7);
 total_grid(:,:,4) = 1.0;
 total_grid(:,:,5) = 0;
-
 origin = [ size_grid_x/(2*resolution), size_grid_y / (2.0*resolution)];
 
 positions_no_error = [];
 result = [];
-positions_error = [];
-
 initial_frame = 1;
 final_frame = nt_frames;
 
@@ -57,14 +47,15 @@ for frame = initial_frame:1:final_frame
 end
 
 %% Main Loop
+tic
 for frame = initial_frame:1:final_frame
     if frame > initial_frame
         delta_error = pose_error{frame-1} \ pose_error{frame};
-        if use_odometry 
+        if use_odometry == true
             current_pose = current_pose * delta_error;
         end
     else
-        if use_odometry
+        if use_odometry == true
             current_pose = pose_error{frame};
         else
             current_pose = eye(4);
@@ -77,6 +68,8 @@ for frame = initial_frame:1:final_frame
     %% Visualization
     result = [result;[current_pose(1,4), current_pose(2,4)]];
     if mod(frame,10) == 0
+        toc
+        tic
         figure(1);
         imagesc(flipud(total_grid(:,:,5)));
         axis equal;
