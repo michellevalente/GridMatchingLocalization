@@ -17,7 +17,6 @@ incrOld = [0;0;0];
 show_images = 0;
 neutralValue = 192 ;
 s = size(moving);
-%N = s(1)*s(2); %That one is not used anymore
 
 if (nargin==5)
     weight = ones(s);
@@ -57,10 +56,8 @@ t = t0 ;
 alpha = alpha0 ;
 
 
-%figure
+
 nbIter = 0;
-% fixed = fillWhite(fixed);fixed = round(fixed*255) ; %fillWhite2 is possible
-% moving = fillWhite(moving);moving = round(moving*255);
 while (~converge)
  
    % Compute the warped coordinates
@@ -96,12 +93,10 @@ while (~converge)
    if optWeight
        weight2(fixed(keep)==neutralValue | im_warped(keep)==neutralValue) = 0 ;
    end
-   
-   
+
    w_sp = sparse(1:N,1:N,weight2(:),N,N);
    err = w_sp*err ;
    J = w_sp*J ; %weighted gradient
-   
    
    % Compute the increment of the solution
    
@@ -110,64 +105,18 @@ while (~converge)
    incr = incrOld*momentum + (1-momentum)*incr;
    t = t+ incr(1:2) ;
    alpha = alpha + incr(3);
-   if show_images == 1
-%        disp(norm(incr(1:2)))
-        figure(3)
-        clf
-    %    imagesc([weight2*255 fixed]);
-    %    imagesc(abs(im_warped-fixed).*weight2) ; colorbar
-    %     imagesc(im_warped);
-       imshowpair(fixed,im_warped)
-       pause(0.01);
-   end
-%    test = length(keep) / mean(err);
-%  round(length(moving)/5000,3) 
+
+
    if (round(norm(incr(1:2)),2) < round(length(moving)/5000,2)  && abs(incr(3))<0.01*pi/180*2 )
-%  if (round(norm(incr(1:2)),3) < 0.065  && abs(incr(3))<0.01*pi/180*2 )
        converge  = 1;
        converged = 1;
-%         mean(err)
-%        smallest_t = t;
-%        smallest_alpha = alpha;
    else  
-%        if norm(incr(1:2)) < smallest_increment 
-%            smallest_t = t;
-%            smallest_alpha = alpha;
-%            smallest_increment = norm(incr(1:2)) ;
-%        end
        nbIter = nbIter + 1;
        if nbIter == max_itr
-%            max_itr = max_itr + 100;
-%            momentum = 0.1;
-%            momentum = 0.2;
-%            if nbIter == 400
-               converge  = 1;converged = 1;
-
+           converge  = 1;converged = 1;
            if (round(norm(incr(1:2)),3) > round(length(moving)/1000,3)  && abs(incr(3))>0.02*pi/180*2 )
                 converged = 0;
            end
-%                max_itr = max_itr + 10;
-%                momentum = momentum + 0.01;
-%            if max_itr > 600
-%                    converge = 1;
-%                    converged = 0;
-% %                    t = 10000;
-%            end
-% %                    if (round(norm(incr(1:2)),2) > round(length(moving)/1000,2)  )
-%                        t = 10000;
-%                    end
-%                    t = 10000;
-%                     mean(err)
-%                     length(keep) / mean(err)
-%                end
-%            else
-%                 converge = 1 ;
-%                  mean(err)
-%                  length(keep) / mean(err)
-%            end
        end
    end
 end
-% figure(3);
-% imshowpair(fixed,im_warped)
-%        pause(0.01);
