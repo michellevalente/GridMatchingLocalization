@@ -1,8 +1,8 @@
 close all;
 
 %% Parameters
-use_odometry = false;
-data_set = '03';
+use_odometry = true;
+data_set = '00';
 root_dir = '/media/daniele/Backup/Dataset/kitti/odometry/sequences/';
 base_dir = fullfile(root_dir, data_set);
 image_dir = fullfile(root_dir,[data_set '/image_0/' ]);
@@ -24,8 +24,8 @@ if exist('pose','var') == 0
 end 
 
 %% Grid initialization
-size_grid_x = 1600;
-size_grid_y = 1600;
+size_grid_x = 500;
+size_grid_y = 500;
 resolution = 0.5;
 size_x = round(size_grid_x/resolution);
 size_y = round(size_grid_y/resolution);
@@ -51,6 +51,7 @@ tic
 for frame = initial_frame:1:final_frame
     if frame > initial_frame
         delta_error = pose_error{frame-1} \ pose_error{frame};
+        delta_error(1:3,1:3) = eye(3,3);
         if use_odometry == true
             current_pose = current_pose * delta_error;
         end

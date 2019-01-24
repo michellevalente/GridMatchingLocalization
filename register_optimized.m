@@ -11,7 +11,7 @@ function [t,alpha,im_warped,converged] = register_optimized(fixed,moving,t0,alph
 %  with pi' = w(pi) and pi is all the pixels of an image
 %
 % optWeight = 1 to set the weights of unknown area to zero
-max_itr = 50;
+max_itr = 200;
 momentum = 0;
 incrOld = [0;0;0];
 show_images = 0;

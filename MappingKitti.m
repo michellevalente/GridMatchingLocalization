@@ -78,5 +78,5 @@ obj_aging_lidar=Reference;
 obj_aging_lidar.X=aging_lidar; clear aging_lidar;
 [total_grid, aging_lidar] = perceptionGridKitti( obj_total_grid, obj_aging_lidar,frame,limits);  
 
-lidar_grid = zeros(size_grid_x/resolution, size_grid_y/resolution,5);
+lidar_grid = zeros(round(size_grid_x/resolution), round(size_grid_y/resolution),5);
 lidar_grid(:,:,4) = 1.0;

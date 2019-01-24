@@ -13,9 +13,9 @@ for i = 1:size(poses,2)
     positions_x(i) = poses{i}(1,4);
     positions_y(i) = poses{i}(2,4);
 end
-std_x = 0.05;
-std_y = 0.05;
-std_yaw = 0.05;
+std_x = 0.03;
+std_y = 0.03;
+std_yaw = 0.03;
 
 previous_pose = poses{1};
 
